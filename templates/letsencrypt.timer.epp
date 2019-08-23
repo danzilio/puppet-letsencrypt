@@ -1,0 +1,12 @@
+# THIS FILE IS MANAGED BY PUPPET
+[Unit]
+Description=Daily renewal of Let's Encrypt's certificates
+
+[Timer]
+OnCalendar=<%= $letsencrypt::renew::renew_systemd_datespec %>
+RandomizedDelaySec=1day
+Persistent=true
+Unit=letsencrypt.service
+
+[Install]
+WantedBy=timers.target

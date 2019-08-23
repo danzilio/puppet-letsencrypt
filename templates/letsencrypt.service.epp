@@ -1,0 +1,9 @@
+# THIS FILE IS MANAGED BY PUPPET
+[Unit]
+Description=Let's Encrypt renewal
+
+[Service]
+Type=oneshot
+ExecStart=<%= $letsencrypt::renew::command %> <% if $letsencrypt::renew::manage_firewalld { -%>--pre-hook "firewall-cmd --add-service=https && firewall-cmd --add-service=http" <% } -%> --post-hook "<% if $letsencrypt::renew::manage_services { -%>
+<% $letsencrypt::renew::manage_services.each |$service| { -%>
+service <%= $service %> restart && <% } -%>true<% if $letsencrypt::renew::manage_services and $letsencrypt::renew::manage_firewalld { -%> && <% } -%><% } -%><%if $letsencrypt::renew::manage_firewalld { -%>firewall-cmd --remove-service=https && firewall-cmd --remove-service=http<% } -%>"

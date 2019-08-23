@@ -6,6 +6,10 @@ class letsencrypt::params {
   $manage_config       = true
   $manage_install      = true
   $manage_dependencies = true
+  $manage_firewalld    = false
+  $manage_services     = []
+  $renew_systemd_datespec = 'daily'
+  $timer_type          = 'cron'
   $package_ensure      = 'installed'
   $path                = '/opt/letsencrypt'
   $venv_path           = '/opt/letsencrypt/.venv' # virtualenv path for vcs-installed letsencrypt

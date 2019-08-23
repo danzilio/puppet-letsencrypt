@@ -24,6 +24,8 @@ The module can integrate with [stahnma/epel](https://forge.puppetlabs.com/stahnm
 to set up the repo by setting the `configure_epel` parameter to `true` (the default for RedHat) and
 installing the module.
 
+For systemd support, [camptocamp/systemd](https://forge.puppet.com/camptocamp/systemd) is required.
+
 ## Usage
 
 ### Setting up the Let's Encrypt client
