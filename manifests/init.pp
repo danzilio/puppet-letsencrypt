@@ -82,6 +82,7 @@ class letsencrypt (
   $renew_cron_hour                       = $letsencrypt::params::renew_cron_hour,
   $renew_cron_minute                     = $letsencrypt::params::renew_cron_minute,
   $renew_cron_monthday                   = $letsencrypt::params::renew_cron_monthday,
+  $renew_cron_environment                = $letsencrypt::params::renew_cron_environment,
 ) inherits letsencrypt::params {
 
   if $manage_install {
