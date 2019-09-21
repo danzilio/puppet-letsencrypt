@@ -20,4 +20,5 @@ RSpec.configure do |c|
       end
     end
   end
+  install_module_from_forge('camptocamp-systemd', '>= 2.6.0')
 end

@@ -45,6 +45,10 @@ class letsencrypt::renew (
   Letsencrypt::Cron::Hour              $cron_hour            = $letsencrypt::renew_cron_hour,
   Letsencrypt::Cron::Minute            $cron_minute          = $letsencrypt::renew_cron_minute,
   Letsencrypt::Cron::Monthday          $cron_monthday        = $letsencrypt::renew_cron_monthday,
+  String[1]                            $renew_systemd_datespec = $letsencrypt::renew_systemd_datespec,
+  Enum['cron', 'systemd']              $timer_type           = $letsencrypt::timer_type,
+  $manage_services                                           = $letsencrypt::manage_services,
+  Boolean $manage_firewalld                                  = $letsencrypt::manage_firewalld,
 ) {
 
   # Directory used for Puppet-managed renewal hooks. Make sure old unmanaged
@@ -86,13 +90,51 @@ class letsencrypt::renew (
   ]).filter | $arg | { $arg =~ NotUndef and $arg != [] }
   $command = join($_command, ' ')
 
-  cron { 'letsencrypt-renew':
-    ensure   => $cron_ensure,
-    command  => $command,
-    user     => 'root',
-    hour     => $cron_hour,
-    minute   => $cron_minute,
-    monthday => $cron_monthday,
+  case $timer_type {
+    'cron': {
+      cron { 'letsencrypt-renew':
+        ensure   => $cron_ensure,
+        command  => $command,
+        user     => 'root',
+        hour     => $cron_hour,
+        minute   => $cron_minute,
+        monthday => $cron_monthday,
+      }
+    }
+    'systemd': {
+      $systemd_ensure = $facts['service_provider'] ? {
+        'systemd' => present,
+        default   => absent,
+      }
+      systemd::unit_file { 'letsencrypt.timer':
+        ensure  => $systemd_ensure,
+        content => epp('letsencrypt/letsencrypt.timer.epp'),
+      }
+      systemd::unit_file { 'letsencrypt.service':
+        ensure  => $systemd_ensure,
+        content => epp('letsencrypt/letsencrypt.service.epp'),
+      }
+      if systemd_ensure {
+        $systemd_timer = 'running'
+      } else {
+        $systemd_timer = $systemd_ensure
+      }
+      service { 'letsencrypt.timer':
+        ensure    => $systemd_timer,
+        enable    => true,
+        hasstatus => true,
+      }
+      file { '/etc/systemd/system/timers.target.wants/certbot.timer' :
+        ensure => absent,
+      }
+      file { '/etc/systemd/system/certbot.timer' :
+        ensure => absent,
+      }
+      file { '/etc/systemd/system/certbot.service' :
+        ensure => absent,
+      }
+    }
+    default: { }
   }
 
 }

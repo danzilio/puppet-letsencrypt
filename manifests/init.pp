@@ -82,6 +82,10 @@ class letsencrypt (
   $renew_cron_hour                       = $letsencrypt::params::renew_cron_hour,
   $renew_cron_minute                     = $letsencrypt::params::renew_cron_minute,
   $renew_cron_monthday                   = $letsencrypt::params::renew_cron_monthday,
+  String[1] $renew_systemd_datespec      = $letsencrypt::params::renew_systemd_datespec,
+  Enum['cron', 'systemd'] $timer_type    = $letsencrypt::params::timer_type,
+  Boolean          $manage_firewalld     = $letsencrypt::params::manage_firewalld,
+  Array[String[1]] $manage_services      = $letsencrypt::params::manage_services,
 ) inherits letsencrypt::params {
 
   if $manage_install {
