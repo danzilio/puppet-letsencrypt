@@ -126,6 +126,26 @@ describe 'letsencrypt::certonly' do
         it { is_expected.to contain_exec('letsencrypt certonly foo.example.com').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a dns-rfc2136 --cert-name 'foo.example.com' -d 'foo.example.com' --dns-rfc2136-credentials /etc/letsencrypt/dns-rfc2136.ini --dns-rfc2136-propagation-seconds 10" }
       end
 
+      context 'with nginx plugin' do
+        let(:title) { 'foo.example.com' }
+        let(:params) { { plugin: 'nginx', letsencrypt_command: 'letsencrypt' } }
+        let(:pre_condition) do
+          <<-PUPPET
+          class { 'letsencrypt':
+            email      => 'foo@example.com',
+            config_dir => '/etc/letsencrypt',
+          }
+          class { 'letsencrypt::plugin::nginx':
+            package_name   => 'irrelevant',
+          }
+          PUPPET
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('letsencrypt::plugin::nginx') }
+        it { is_expected.to contain_exec('letsencrypt certonly foo.example.com').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 --cert-name 'foo.example.com' -d 'foo.example.com'" }
+      end
+
       context 'with custom plugin' do
         let(:title) { 'foo.example.com' }
         let(:params) { { plugin: 'apache' } }

@@ -120,6 +120,19 @@ letsencrypt::certonly { 'foo':
 }
 ```
 
+#### Nginx authenticator
+
+To request a certificate for $::fqdn with the `certonly` installer and the `nginx` authenticator, temporarily opening firewall for HTTP, with an already running Nginx, and reloading Nginx afterwards:
+
+```puppet
+letsencrypt::certonly { $::fqdn:
+  domains => [$::fqdn],
+  plugin  => 'nginx',
+  pre_hook_commands     => ['iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT -m comment --comment TEMPORARY_LETSENCRYPT'],
+  post_hook_commands    => ['iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT -m comment --comment TEMPORARY_LETSENCRYPT', 'systemctl reload nginx'],
+}
+```
+
 #### Webroot plugin
 
 To request a certificate using the `webroot` plugin, the paths to the webroots
