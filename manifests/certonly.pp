@@ -48,7 +48,7 @@
 define letsencrypt::certonly (
   Enum['present','absent']                  $ensure               = 'present',
   Array[String[1]]                          $domains              = [$title],
-  String[1]                                 $cert_name            = $title,
+  String[1]                                 $cert_name            = $domains[0],
   Boolean                                   $custom_plugin        = false,
   Letsencrypt::Plugin                       $plugin               = 'standalone',
   Array[Stdlib::Unixpath]                   $webroot_paths        = [],
