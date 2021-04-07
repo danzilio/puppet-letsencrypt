@@ -2,3 +2,7 @@
 letsencrypt::configure_epel: true
 letsencrypt::plugin::dns_rfc2136::package_name: 'python2-certbot-dns-rfc2136'
 letsencrypt::plugin::dns_route53::package_name: 'python2-certbot-dns-route53'
+letsencrypt::vcs_dependencies:
+  - 'git'
+  - 'python3'
+  - 'python3-virtualenv'

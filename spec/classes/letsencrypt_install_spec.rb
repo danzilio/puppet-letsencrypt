@@ -11,8 +11,9 @@ describe 'letsencrypt::install' do
         manage_dependencies: true,
         path: '/opt/letsencrypt',
         repo: 'https://github.com/certbot/certbot.git',
-        version: 'v0.30.2',
-        package_name: 'letsencrypt'
+        version: 'v1.7.0',
+        package_name: 'letsencrypt',
+        vcs_dependencies: vcs_dependencies,
       }
     end
     let(:additional_params) { {} }
@@ -20,6 +21,14 @@ describe 'letsencrypt::install' do
     context "on #{os} based operating systems" do
       let :facts do
         facts
+      end
+      let(:vcs_dependencies) do
+        case facts[:osfamily]
+        when 'Debian'
+          ['git', 'python3', 'python3-venv']
+        when 'RedHat', 'OpenBSD', 'FreeBSD'
+          ['git', 'python3', 'python3-virtualenv']
+        end
       end
 
       describe 'with install_method => package' do
@@ -29,8 +38,9 @@ describe 'letsencrypt::install' do
 
         it 'contains the correct resources' do
           is_expected.not_to contain_vcsrepo('/opt/letsencrypt')
-          is_expected.not_to contain_package('python')
-          is_expected.not_to contain_package('git')
+          vcs_dependencies.each do |package|
+            is_expected.not_to contain_package(package)
+          end
 
           is_expected.to contain_package('letsencrypt').with_ensure('installed')
         end
@@ -64,9 +74,10 @@ describe 'letsencrypt::install' do
 
         it 'contains the correct resources' do
           is_expected.to contain_vcsrepo('/opt/letsencrypt').with(source: 'https://github.com/certbot/certbot.git',
-                                                                  revision: 'v0.30.2')
-          is_expected.to contain_package('python')
-          is_expected.to contain_package('git')
+                                                                  revision: 'v1.7.0')
+          vcs_dependencies.each do |package|
+            is_expected.to contain_package(package)
+          end
 
           is_expected.not_to contain_package('letsencrypt')
         end
@@ -93,8 +104,9 @@ describe 'letsencrypt::install' do
           let(:additional_params) { { install_method: 'vcs', manage_dependencies: false } }
 
           it 'does not contain the dependencies' do
-            is_expected.not_to contain_package('git')
-            is_expected.not_to contain_package('python')
+            vcs_dependencies.each do |package|
+              is_expected.not_to contain_package(package)
+            end
           end
         end
       end

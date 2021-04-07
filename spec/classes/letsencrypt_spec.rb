@@ -32,11 +32,9 @@ describe 'letsencrypt' do
                    manage_install: true,
                    manage_dependencies: true,
                    repo: 'https://github.com/certbot/certbot.git',
-                   version: 'v0.39.0').
-              that_notifies('Exec[initialize letsencrypt]').
+                   version: 'v1.7.0').
               that_comes_before('Class[letsencrypt::renew]')
-            is_expected.to contain_exec('initialize letsencrypt')
-            is_expected.to contain_class('letsencrypt::config').that_comes_before('Exec[initialize letsencrypt]')
+            is_expected.to contain_class('letsencrypt::config')
             is_expected.to contain_class('letsencrypt::renew').
               with(pre_hook_commands: [],
                    post_hook_commands: [],
@@ -92,7 +90,11 @@ describe 'letsencrypt' do
               is_expected.to contain_package('letsencrypt').with(name: 'py27-certbot')
               is_expected.to contain_file('/usr/local/etc/letsencrypt').with(ensure: 'directory')
             else
-              is_expected.to contain_class('letsencrypt::install').with(install_method: 'vcs')
+              is_expected.to contain_class('letsencrypt::install').with(install_method: 'vcs').
+                that_notifies('Exec[initialize letsencrypt]').
+                that_comes_before('Class[letsencrypt::renew]')
+              is_expected.to contain_exec('initialize letsencrypt')
+              is_expected.to contain_class('letsencrypt::config').that_comes_before('Exec[initialize letsencrypt]')
               is_expected.to contain_file('/etc/letsencrypt').with(ensure: 'directory')
             end
           end
@@ -102,13 +104,13 @@ describe 'letsencrypt' do
           let(:additional_params) { { path: '/usr/lib/letsencrypt', install_method: 'vcs' } }
 
           it { is_expected.to contain_class('letsencrypt::install').with_path('/usr/lib/letsencrypt') }
-          it { is_expected.to contain_exec('initialize letsencrypt').with_command('/usr/lib/letsencrypt/letsencrypt-auto -h') }
+          it { is_expected.to contain_exec('initialize letsencrypt').with_command('python3 tools/venv3.py') }
         end
 
         describe 'with custom environment variables' do
-          let(:additional_params) { { environment: ['FOO=bar', 'FIZZ=buzz'] } }
+          let(:additional_params) { { install_method: 'vcs', environment: ['FOO=bar', 'FIZZ=buzz'] } }
 
-          it { is_expected.to contain_exec('initialize letsencrypt').with_environment(['VENV_PATH=/opt/letsencrypt/.venv', 'FOO=bar', 'FIZZ=buzz']) }
+          it { is_expected.to contain_exec('initialize letsencrypt').with_environment(['FOO=bar', 'FIZZ=buzz']) }
         end
 
         describe 'with custom repo' do
@@ -162,14 +164,13 @@ describe 'letsencrypt' do
           let(:additional_params) { { install_method: 'package', package_command: 'letsencrypt' } }
 
           it { is_expected.to contain_class('letsencrypt::install').with_install_method('package') }
-          it { is_expected.to contain_exec('initialize letsencrypt').with_command('letsencrypt -h') }
         end
 
         describe 'with install_method => vcs' do
           let(:additional_params) { { install_method: 'vcs' } }
 
           it { is_expected.to contain_class('letsencrypt::install').with_install_method('vcs') }
-          it { is_expected.to contain_exec('initialize letsencrypt').with_command('/opt/letsencrypt/letsencrypt-auto -h') }
+          it { is_expected.to contain_exec('initialize letsencrypt').with_command('python3 tools/venv3.py') }
         end
 
         describe 'with custom config directory' do

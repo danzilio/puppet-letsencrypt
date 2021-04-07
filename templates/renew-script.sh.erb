@@ -1,5 +1,5 @@
 #!/bin/sh
-<%- @execution_environment.each do |environment| -%>
+<%- @environment.each do |environment| -%>
 export <%= environment %>
 <%- end -%>
 <%= @cron_cmd %>

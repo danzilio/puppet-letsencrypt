@@ -70,19 +70,19 @@ The path to the letsencrypt installation.
 
 Default value: '/opt/letsencrypt'
 
-##### `venv_path`
-
-Data type: `Any`
-
-virtualenv path for vcs-installed Certbot
-
-Default value: '/opt/letsencrypt/.venv'
-
 ##### `environment`
 
 Data type: `Array`
 
-An optional array of environment variables (in addition to VENV_PATH)
+An optional array of environment variables.
+
+Default value: []
+
+##### `vcs_dependencies`
+
+Data type: `Array`
+
+An array of packages on which the VCS installation method depends.
 
 Default value: []
 
@@ -100,7 +100,7 @@ Data type: `String`
 
 The Git ref (tag, sha, branch) to check out when installing the client with the `vcs` method.
 
-Default value: 'v0.39.0'
+Default value: 'v1.7.0'
 
 ##### `package_name`
 
@@ -381,6 +381,14 @@ Name of package to use when installing the client with the `package` method.
 
 Default value: $letsencrypt::package_name
 
+##### `vcs_dependencies`
+
+Data type: `Array`
+
+An array of packages on which the VCS installation method depends.
+
+Default value: []
+
 ### letsencrypt::plugin::dns_rfc2136
 
 This class installs and configures the Let's Encrypt dns-rfc2136 plugin.
@@ -613,7 +621,7 @@ Default value: []
 
 Data type: `Array[String[1]]`
 
-An optional array of environment variables (in addition to VENV_PATH).
+An optional array of environment variables.
 
 Default value: []
 

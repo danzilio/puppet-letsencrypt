@@ -7,6 +7,7 @@
 # @param path The path to the letsencrypt installation.
 # @param repo A Git URL to install the Let's encrypt client from.
 # @param version The Git ref (tag, sha, branch) to check out when installing the client with the `vcs` method.
+# @param vcs_dependencies Array of packages to install before executing vcs installation.
 # @param package_ensure The value passed to `ensure` when installing the client with the `package` method.
 # @param package_name Name of package to use when installing the client with the `package` method.
 #
@@ -20,12 +21,12 @@ class letsencrypt::install (
   String $path                           = $letsencrypt::path,
   String $repo                           = $letsencrypt::repo,
   String $version                        = $letsencrypt::version,
+  Array[String[1]] $vcs_dependencies     = $letsencrypt::vcs_dependencies,
 ) {
   if $install_method == 'vcs' {
     if $manage_dependencies {
-      $dependencies = ['python', 'git']
-      ensure_packages($dependencies)
-      Package[$dependencies] -> Vcsrepo[$path]
+      ensure_packages($vcs_dependencies)
+      Package[$vcs_dependencies] -> Vcsrepo[$path]
     }
 
     vcsrepo { $path:

@@ -1,0 +1,5 @@
+---
+letsencrypt::vcs_dependencies:
+  - 'git'
+  - 'python3'
+  - 'python3-venv'
