@@ -166,6 +166,39 @@ letsencrypt::certonly { 'foo':
   plugin        => 'dns-rfc2136',
 }
 ```
+#### dns-ovh plugin
+
+To request a certificate using the `dns-ovh` plugin, you will at a minimum
+need to pass `endpoint`, `application_key`, `application_secret` and
+`consumer_key`to the class `letsencrypt::plugin::dns_ovh`.
+Ideally keys and secret should be encrypted, eg. with eyaml if using Hiera.
+
+Plugin documentation and it's parameters can be found here:
+https://certbot-dns-ovh.readthedocs.io
+
+Note:
+
+For Debian based OS, this plugin is compatible from Debian 10
+and Ubuntu 19. Older OS are not supported.
+
+Parameter defaults:
+
+- `propagation_seconds` 30 (the plugin defaults to 30)
+
+Example:
+
+```puppet
+class { 'letsencrypt::plugin::dns_ovh':
+  endpoint           => 'ovh-eu',
+  application_key    => 'MDAwMDAwMDAwMDAw',
+  application_secret => 'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw',
+  consumer_key       => 'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw',
+}
+letsencrypt::certonly { 'foo':
+  domains       => ['foo.example.com', 'bar.example.com'],
+  plugin        => 'dns-ovh',
+}
+```
 
 #### Additional arguments
 
