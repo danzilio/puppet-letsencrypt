@@ -12,6 +12,7 @@
 # @param manage_package Manage the plugin package.
 # @param package_name The name of the package to install when $manage_package is true.
 # @param config_dir The path to the configuration directory.
+# @param ini_file_owner_group Group owner of the generated ini file
 #
 class letsencrypt::plugin::dns_rfc2136 (
   Stdlib::Host $server,
@@ -23,6 +24,7 @@ class letsencrypt::plugin::dns_rfc2136 (
   Integer $propagation_seconds     = 10,
   Stdlib::Absolutepath $config_dir = $letsencrypt::config_dir,
   Boolean $manage_package          = true,
+  String $ini_file_owner_group     = $letsencrypt::root_file_owner_group,
 ) {
   require letsencrypt
 

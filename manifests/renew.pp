@@ -26,16 +26,19 @@
 # @param cron_monthday
 #   Optional string, integer or array of monthday(s) the renewal command should
 #   run. E.g. '2-30/2' to run on even days. Default: Every day.
+# @param hook_file_owner_group
+#   Set the group ownership of the pushed hook files
 #
 class letsencrypt::renew (
-  Variant[String[1], Array[String[1]]] $pre_hook_commands    = $letsencrypt::renew_pre_hook_commands,
-  Variant[String[1], Array[String[1]]] $post_hook_commands   = $letsencrypt::renew_post_hook_commands,
-  Variant[String[1], Array[String[1]]] $deploy_hook_commands = $letsencrypt::renew_deploy_hook_commands,
-  Array[String[1]]                     $additional_args      = $letsencrypt::renew_additional_args,
-  Enum['present', 'absent']            $cron_ensure          = $letsencrypt::renew_cron_ensure,
-  Letsencrypt::Cron::Hour              $cron_hour            = $letsencrypt::renew_cron_hour,
-  Letsencrypt::Cron::Minute            $cron_minute          = $letsencrypt::renew_cron_minute,
-  Letsencrypt::Cron::Monthday          $cron_monthday        = $letsencrypt::renew_cron_monthday,
+  Variant[String[1], Array[String[1]]] $pre_hook_commands     = $letsencrypt::renew_pre_hook_commands,
+  Variant[String[1], Array[String[1]]] $post_hook_commands    = $letsencrypt::renew_post_hook_commands,
+  Variant[String[1], Array[String[1]]] $deploy_hook_commands  = $letsencrypt::renew_deploy_hook_commands,
+  Array[String[1]]                     $additional_args       = $letsencrypt::renew_additional_args,
+  Enum['present', 'absent']            $cron_ensure           = $letsencrypt::renew_cron_ensure,
+  Letsencrypt::Cron::Hour              $cron_hour             = $letsencrypt::renew_cron_hour,
+  Letsencrypt::Cron::Minute            $cron_minute           = $letsencrypt::renew_cron_minute,
+  Letsencrypt::Cron::Monthday          $cron_monthday         = $letsencrypt::renew_cron_monthday,
+  String                               $hook_file_owner_group = $letsencrypt::root_file_owner_group,
 ) {
   # Directory used for Puppet-managed renewal hooks. Make sure old unmanaged
   # hooks in this directory are purged. Leave custom hooks in the default
@@ -44,7 +47,7 @@ class letsencrypt::renew (
     ensure  => directory,
     path    => "${letsencrypt::config_dir}/renewal-hooks-puppet",
     owner   => 'root',
-    group   => 'root',
+    group   => $hook_file_owner_group,
     mode    => '0755',
     recurse => true,
     purge   => true,

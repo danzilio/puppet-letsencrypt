@@ -1,2 +1,3 @@
 ---
 letsencrypt::cron_owner_group: 'wheel'
+letsencrypt::root_file_owner_group: 'wheel'
