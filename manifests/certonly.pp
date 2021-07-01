@@ -117,6 +117,17 @@ define letsencrypt::certonly (
       ]
     }
 
+    'dns-cloudflare': {
+      require letsencrypt::plugin::dns_cloudflare
+      $_domains = join($domains, '\' -d \'')
+      $plugin_args  = [
+        "--cert-name '${cert_name}' -d '${_domains}'",
+        '--dns-cloudflare',
+        "--dns-cloudflare-credentials ${letsencrypt::plugin::dns_cloudflare::config_path}",
+        "--dns-cloudflare-propagation-seconds ${letsencrypt::plugin::dns_cloudflare::propagation_seconds}",
+      ]
+    }
+
     default: {
       if $ensure == 'present' {
         $_domains = join($domains, '\' -d \'')

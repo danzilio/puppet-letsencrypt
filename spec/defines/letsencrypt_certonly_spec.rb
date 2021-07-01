@@ -153,6 +153,27 @@ describe 'letsencrypt::certonly' do
         it { is_expected.to contain_exec('letsencrypt certonly foo.example.com').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a dns-route53 --cert-name 'foo.example.com' -d 'foo.example.com' --dns-route53-propagation-seconds 10" }
       end
 
+      context 'with dns-cloudflare plugin' do
+        let(:title) { 'foo.example.com' }
+        let(:params) { { plugin: 'dns-cloudflare', letsencrypt_command: 'letsencrypt' } }
+        let(:pre_condition) do
+          <<-PUPPET
+          class { 'letsencrypt':
+            email      => 'foo@example.com',
+            config_dir => '/etc/letsencrypt',
+          }
+          class { 'letsencrypt::plugin::dns_cloudflare':
+            package_name => 'irrelevant',
+            api_token    => 'dummy-cloudflare-api-token',
+          }
+          PUPPET
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('letsencrypt::plugin::dns_cloudflare') }
+        it { is_expected.to contain_exec('letsencrypt certonly foo.example.com').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a dns-cloudflare --cert-name 'foo.example.com' -d 'foo.example.com' --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/dns-cloudflare.ini --dns-cloudflare-propagation-seconds 10" }
+      end
+
       context 'with custom plugin' do
         let(:title) { 'foo.example.com' }
         let(:params) { { plugin: 'apache' } }

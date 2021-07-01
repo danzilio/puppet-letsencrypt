@@ -167,6 +167,34 @@ letsencrypt::certonly { 'foo':
 }
 ```
 
+#### dns-cloudflare plugin
+
+To request a certificate using the `dns-cloudflare` plugin, you will at a minimum
+need to pass in either `api_token` or `api_key` and `email` for one of the
+authentication methods to the class `letsencrypt::plugin::dns_cloudflare`.
+Ideally the token secret should be encrypted, e.g. with eyaml if using Hiera.
+
+Plugin documentation and its parameters can be found here:
+https://certbot-dns-cloudflare.readthedocs.io
+
+Parameter defaults:
+
+- `config_path` ${letsencrypt::config_dir}/dns-cloudflare.ini
+- `propagation_seconds` 10
+
+Example:
+
+```puppet
+class { 'letsencrypt::plugin::dns_cloudflare':
+  api_token => 'cloudflare-api-token',
+}
+
+letsencrypt::certonly { 'foo':
+  domains => ['foo.example.com', 'bar.example.com'],
+  plugin  => 'dns-cloudflare',
+}
+```
+
 #### Additional arguments
 
 If you need to pass a command line flag to the `letsencrypt-auto` command that
