@@ -48,7 +48,7 @@ describe 'letsencrypt::certonly' do
         let(:params) { { domains: ['foo.example.com', 'bar.example.com', '*.example.com'] } }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a standalone --cert-name 'foo' -d 'foo.example.com' -d 'bar.example.com' -d '*.example.com'" }
+        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a standalone --cert-name 'foo.example.com' -d 'foo.example.com' -d 'bar.example.com' -d '*.example.com'" }
       end
 
       context 'with custom cert-name' do
@@ -87,7 +87,7 @@ describe 'letsencrypt::certonly' do
         end
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a webroot --cert-name 'foo' --webroot-path /var/www/foo -d 'foo.example.com' --webroot-path /var/www/bar -d 'bar.example.com'" }
+        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a webroot --cert-name 'foo.example.com' --webroot-path /var/www/foo -d 'foo.example.com' --webroot-path /var/www/bar -d 'bar.example.com'" }
       end
 
       context 'with webroot plugin, one webroot, and multiple domains' do
@@ -99,7 +99,7 @@ describe 'letsencrypt::certonly' do
         end
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a webroot --cert-name 'foo' --webroot-path /var/www/foo -d 'foo.example.com' -d 'bar.example.com'" }
+        it { is_expected.to contain_exec('letsencrypt certonly foo').with_command "letsencrypt --text --agree-tos --non-interactive certonly --rsa-key-size 4096 -a webroot --cert-name 'foo.example.com' --webroot-path /var/www/foo -d 'foo.example.com' -d 'bar.example.com'" }
       end
 
       context 'with webroot plugin and no webroot_paths' do
